@@ -10,8 +10,21 @@ const firebaseConfig = {
   appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-// Initialize Firebase
-const app = initializeApp(firebaseConfig);
-export const auth = getAuth(app);
-export const googleProvider = new GoogleAuthProvider();
-googleProvider.setCustomParameters({ prompt: 'select_account' });
+// Initialize Firebase only if config is valid
+let auth = null;
+let googleProvider = null;
+
+if (firebaseConfig.apiKey) {
+    try {
+        const app = initializeApp(firebaseConfig);
+        auth = getAuth(app);
+        googleProvider = new GoogleAuthProvider();
+        googleProvider.setCustomParameters({ prompt: 'select_account' });
+    } catch (err) {
+        console.error("Firebase initialization failed:", err);
+    }
+} else {
+    console.warn("Firebase API key is missing. Google Sign-In will not be available.");
+}
+
+export { auth, googleProvider };
