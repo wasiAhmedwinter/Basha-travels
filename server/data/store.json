@@ -1,0 +1,434 @@
+{
+  "carTypes": [
+    {
+      "id": "mini",
+      "name": "Hatchback (Swift, i10)",
+      "ratePerKm": 14,
+      "baseFare": 60,
+      "minFare": 120,
+      "seats": 4,
+      "theme": "#9bb8ff"
+    },
+    {
+      "id": "sedan",
+      "name": "Sedan (Dzire, Aura)",
+      "ratePerKm": 18,
+      "baseFare": 90,
+      "minFare": 160,
+      "seats": 4,
+      "theme": "#d5b784"
+    },
+    {
+      "id": "suv",
+      "name": "SUV (Innova, Ertiga)",
+      "ratePerKm": 24,
+      "baseFare": 120,
+      "minFare": 220,
+      "seats": 6,
+      "theme": "#7dd0b8"
+    },
+    {
+      "id": "executive",
+      "name": "Luxury (Camry, Superb)",
+      "ratePerKm": 30,
+      "baseFare": 180,
+      "minFare": 320,
+      "seats": 4,
+      "theme": "#b3a0ff"
+    }
+  ],
+  "users": [
+    {
+      "id": "user-admin",
+      "role": "admin",
+      "username": "admin",
+      "passwordHash": "8c6976e5b5410415bde908bd4dee15dfb167a9c873fc4bb8a81f6f2ab448a918",
+      "displayName": "Admin"
+    },
+    {
+      "id": "user-customer-demo",
+      "role": "customer",
+      "email": "riya@example.com",
+      "passwordHash": "b041c0aeb35bb0fa4aa668ca5a920b590196fdaf9a00eb852c9b7f4d123cc6d6",
+      "displayName": "Riya Sen"
+    },
+    {
+      "id": "user-driver-1",
+      "role": "driver",
+      "username": "driver1",
+      "passwordHash": "494d022492052a06f8f81949639a1d148c1051fa3d4e4688fbd96efe649cd382",
+      "displayName": "Ramesh Kumar"
+    },
+    {
+      "id": "user-driver-2",
+      "role": "driver",
+      "username": "driver2",
+      "passwordHash": "494d022492052a06f8f81949639a1d148c1051fa3d4e4688fbd96efe649cd382",
+      "displayName": "Suresh Yadav"
+    },
+    {
+      "id": "user-driver-3",
+      "role": "driver",
+      "username": "driver3",
+      "passwordHash": "494d022492052a06f8f81949639a1d148c1051fa3d4e4688fbd96efe649cd382",
+      "displayName": "Abdul Khan"
+    },
+    {
+      "id": "user-driver-4",
+      "role": "driver",
+      "username": "driver4",
+      "passwordHash": "494d022492052a06f8f81949639a1d148c1051fa3d4e4688fbd96efe649cd382",
+      "displayName": "Balraj Singh"
+    },
+    {
+      "id": "user-driver-5",
+      "role": "driver",
+      "username": "driver5",
+      "passwordHash": "494d022492052a06f8f81949639a1d148c1051fa3d4e4688fbd96efe649cd382",
+      "displayName": "Amit Sharma"
+    },
+    {
+      "id": "user-driver-6",
+      "role": "driver",
+      "username": "driver6",
+      "passwordHash": "494d022492052a06f8f81949639a1d148c1051fa3d4e4688fbd96efe649cd382",
+      "displayName": "Pramod Patel"
+    },
+    {
+      "id": "user-driver-7",
+      "role": "driver",
+      "username": "driver7",
+      "passwordHash": "494d022492052a06f8f81949639a1d148c1051fa3d4e4688fbd96efe649cd382",
+      "displayName": "Vikram Reddy"
+    },
+    {
+      "id": "user-driver-8",
+      "role": "driver",
+      "username": "driver8",
+      "passwordHash": "494d022492052a06f8f81949639a1d148c1051fa3d4e4688fbd96efe649cd382",
+      "displayName": "Arjun Nair"
+    },
+    {
+      "id": "user-driver-9",
+      "role": "driver",
+      "username": "driver9",
+      "passwordHash": "494d022492052a06f8f81949639a1d148c1051fa3d4e4688fbd96efe649cd382",
+      "displayName": "Manoj Tiwari"
+    },
+    {
+      "id": "user-driver-10",
+      "role": "driver",
+      "username": "driver10",
+      "passwordHash": "494d022492052a06f8f81949639a1d148c1051fa3d4e4688fbd96efe649cd382",
+      "displayName": "Dinesh Gowda"
+    },
+    {
+      "id": "user-driver-11",
+      "role": "driver",
+      "username": "driver11",
+      "passwordHash": "494d022492052a06f8f81949639a1d148c1051fa3d4e4688fbd96efe649cd382",
+      "displayName": "Rajesh Pillai"
+    },
+    {
+      "id": "user-driver-12",
+      "role": "driver",
+      "username": "driver12",
+      "passwordHash": "494d022492052a06f8f81949639a1d148c1051fa3d4e4688fbd96efe649cd382",
+      "displayName": "Kiran Chetri"
+    },
+    {
+      "id": "user-customer-c63c530f",
+      "role": "customer",
+      "email": "wasiahemadchoudhary@gmail.com",
+      "passwordHash": "f5e33862a28cb3fe7e60893e4d6e2f0c96c509b468bcb3de84064b7cf2b0d291",
+      "displayName": "Wasi"
+    }
+  ],
+  "drivers": [
+    {
+      "id": "driver-1",
+      "userId": "user-driver-1",
+      "name": "Ramesh Kumar",
+      "username": "driver1",
+      "status": "free",
+      "carTypeId": "mini",
+      "vehicleNumber": "MH 01 AB 1234 • Maruti Swift",
+      "rating": 4.88,
+      "locationId": "kempegowda-airport",
+      "lifetimeEarnings": 12840,
+      "currentTripId": null
+    },
+    {
+      "id": "driver-2",
+      "userId": "user-driver-2",
+      "name": "Suresh Yadav",
+      "username": "driver2",
+      "status": "on_trip",
+      "carTypeId": "sedan",
+      "vehicleNumber": "DL 02 CD 5678 • Maruti Dzire",
+      "rating": 4.95,
+      "locationId": "majestic-east",
+      "lifetimeEarnings": 15560,
+      "currentTripId": "trip-live-1"
+    },
+    {
+      "id": "driver-3",
+      "userId": "user-driver-3",
+      "name": "Abdul Khan",
+      "username": "driver3",
+      "status": "free",
+      "carTypeId": "suv",
+      "vehicleNumber": "KA 03 EF 9012 • Toyota Innova",
+      "rating": 4.92,
+      "locationId": "hubli",
+      "lifetimeEarnings": 17620,
+      "currentTripId": null
+    },
+    {
+      "id": "driver-4",
+      "userId": "user-driver-4",
+      "name": "Balraj Singh",
+      "username": "driver4",
+      "status": "free",
+      "carTypeId": "executive",
+      "vehicleNumber": "PB 04 GH 3456 • Skoda Superb",
+      "rating": 4.97,
+      "locationId": "sdm-college",
+      "lifetimeEarnings": 20840,
+      "currentTripId": null
+    },
+    {
+      "id": "driver-5",
+      "userId": "user-driver-5",
+      "name": "Amit Sharma",
+      "username": "driver5",
+      "status": "free",
+      "carTypeId": "mini",
+      "vehicleNumber": "UP 14 XY 7788 • Hyundai i10",
+      "rating": 4.75,
+      "locationId": "belgaum-fort",
+      "lifetimeEarnings": 9400,
+      "currentTripId": null
+    },
+    {
+      "id": "driver-6",
+      "userId": "user-driver-6",
+      "name": "Pramod Patel",
+      "username": "driver6",
+      "status": "free",
+      "carTypeId": "sedan",
+      "vehicleNumber": "GJ 05 ZZ 1122 • Hyundai Aura",
+      "rating": 4.81,
+      "locationId": "gulbarga-uni",
+      "lifetimeEarnings": 11050,
+      "currentTripId": null
+    },
+    {
+      "id": "driver-7",
+      "userId": "user-driver-7",
+      "name": "Vikram Reddy",
+      "username": "driver7",
+      "status": "free",
+      "carTypeId": "suv",
+      "vehicleNumber": "TS 07 PQ 5544 • Maruti Ertiga",
+      "rating": 4.89,
+      "locationId": "gol-gumbaz",
+      "lifetimeEarnings": 16200,
+      "currentTripId": null
+    },
+    {
+      "id": "driver-8",
+      "userId": "user-driver-8",
+      "name": "Arjun Nair",
+      "username": "driver8",
+      "status": "free",
+      "carTypeId": "mini",
+      "vehicleNumber": "KL 01 RT 3344 • Tata Tiago",
+      "rating": 4.9,
+      "locationId": "bidar-fort",
+      "lifetimeEarnings": 14500,
+      "currentTripId": null
+    },
+    {
+      "id": "driver-9",
+      "userId": "user-driver-9",
+      "name": "Manoj Tiwari",
+      "username": "driver9",
+      "status": "free",
+      "carTypeId": "sedan",
+      "vehicleNumber": "BR 01 MN 9988 • Honda Amaze",
+      "rating": 4.82,
+      "locationId": "kempegowda-airport",
+      "lifetimeEarnings": 13400,
+      "currentTripId": null
+    },
+    {
+      "id": "driver-10",
+      "userId": "user-driver-10",
+      "name": "Dinesh Gowda",
+      "username": "driver10",
+      "status": "free",
+      "carTypeId": "suv",
+      "vehicleNumber": "KA 05 KL 6767 • Mahindra XUV700",
+      "rating": 4.96,
+      "locationId": "majestic-east",
+      "lifetimeEarnings": 19800,
+      "currentTripId": null
+    },
+    {
+      "id": "driver-11",
+      "userId": "user-driver-11",
+      "name": "Rajesh Pillai",
+      "username": "driver11",
+      "status": "free",
+      "carTypeId": "executive",
+      "vehicleNumber": "TN 02 BB 1111 • Toyota Camry",
+      "rating": 5,
+      "locationId": "hubli",
+      "lifetimeEarnings": 28000,
+      "currentTripId": null
+    },
+    {
+      "id": "driver-12",
+      "userId": "user-driver-12",
+      "name": "Kiran Chetri",
+      "username": "driver12",
+      "status": "free",
+      "carTypeId": "sedan",
+      "vehicleNumber": "AS 01 CC 2233 • Maruti Dzire",
+      "rating": 4.85,
+      "locationId": "sdm-college",
+      "lifetimeEarnings": 12500,
+      "currentTripId": null
+    }
+  ],
+  "customers": [
+    {
+      "userId": "user-customer-demo",
+      "name": "Riya Sen",
+      "email": "riya@example.com",
+      "phone": "+91 90000 00001",
+      "joinedAt": "2026-03-10T02:59:17.736Z"
+    },
+    {
+      "userId": "user-customer-c63c530f",
+      "name": "Wasi",
+      "email": "wasiahemadchoudhary@gmail.com",
+      "phone": "2",
+      "joinedAt": "2026-03-13T03:02:09.481Z"
+    }
+  ],
+  "trips": [
+    {
+      "id": "trip-live-1",
+      "customerUserId": "user-customer-demo",
+      "driverId": "driver-2",
+      "carTypeId": "sedan",
+      "pickupId": "kempegowda-airport",
+      "dropoffId": "majestic-east",
+      "status": "in_progress",
+      "createdAt": "2026-03-13T01:29:17.736Z",
+      "assignedAt": "2026-03-13T01:32:17.736Z",
+      "startedAt": "2026-03-13T01:47:17.736Z",
+      "completedAt": null,
+      "etaMin": 4,
+      "distanceKm": 31.3,
+      "durationMin": 119,
+      "fare": 814,
+      "driverPayout": 602,
+      "platformRevenue": 212,
+      "routePoints": [
+        {
+          "x": 14,
+          "y": 22
+        },
+        {
+          "x": 40,
+          "y": 24
+        },
+        {
+          "x": 52,
+          "y": 34
+        },
+        {
+          "x": 78,
+          "y": 34
+        }
+      ]
+    },
+    {
+      "id": "trip-complete-1",
+      "customerUserId": "user-customer-demo",
+      "driverId": "driver-3",
+      "carTypeId": "suv",
+      "pickupId": "hubli",
+      "dropoffId": "belgaum-fort",
+      "status": "completed",
+      "createdAt": "2026-03-12T02:59:17.736Z",
+      "assignedAt": "2026-03-12T03:11:17.736Z",
+      "startedAt": "2026-03-12T03:29:17.736Z",
+      "completedAt": "2026-03-12T03:59:17.736Z",
+      "etaMin": 6,
+      "distanceKm": 22.1,
+      "durationMin": 84,
+      "fare": 764,
+      "driverPayout": 565,
+      "platformRevenue": 199,
+      "routePoints": [
+        {
+          "x": 71,
+          "y": 61
+        },
+        {
+          "x": 47.5,
+          "y": 42
+        },
+        {
+          "x": 59.5,
+          "y": 52
+        },
+        {
+          "x": 36,
+          "y": 31
+        }
+      ]
+    },
+    {
+      "id": "trip-complete-2",
+      "customerUserId": "user-customer-demo",
+      "driverId": "driver-6",
+      "carTypeId": "sedan",
+      "pickupId": "gol-gumbaz",
+      "dropoffId": "bidar-fort",
+      "status": "completed",
+      "createdAt": "2026-03-11T02:59:17.736Z",
+      "assignedAt": "2026-03-11T03:05:17.736Z",
+      "startedAt": "2026-03-11T03:17:17.736Z",
+      "completedAt": "2026-03-11T03:47:17.736Z",
+      "etaMin": 5,
+      "distanceKm": 17.4,
+      "durationMin": 66,
+      "fare": 492,
+      "driverPayout": 364,
+      "platformRevenue": 128,
+      "routePoints": [
+        {
+          "x": 62,
+          "y": 79
+        },
+        {
+          "x": 42,
+          "y": 63.5
+        },
+        {
+          "x": 54,
+          "y": 73.5
+        },
+        {
+          "x": 34,
+          "y": 56
+        }
+      ]
+    }
+  ]
+}

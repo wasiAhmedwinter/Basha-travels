@@ -1,6 +1,13 @@
 # Taxi Redesign
 
-Fresh repository for the full redesign of the taxi project.
+Business-first static homepage for a taxi service website.
 
-The existing `taxii/taxi` repository is preserved as the previous implementation.
-This repo starts clean so the redesign can be planned and built separately.
+## Run locally
+
+From the repo root:
+
+```powershell
+python -m http.server 4173
+```
+
+Open `http://localhost:4173`.
