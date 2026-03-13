@@ -1,8 +1,48 @@
 import crypto from "crypto";
 import { query } from "../db.js";
+import { OAuth2Client } from "google-auth-library";
+
+const googleClient = new OAuth2Client();
 
 export function hashPassword(password) {
   return crypto.createHash("sha256").update(password).digest("hex");
+}
+
+export async function verifyGoogleToken(idToken) {
+  const ticket = await googleClient.verifyIdToken({
+    idToken,
+    audience: [
+      process.env.VITE_FIREBASE_GOOGLE_WEB_CLIENT_ID,
+      // Add other client IDs if necessary (e.g. for native apps)
+    ].filter(Boolean)
+  });
+  return ticket.getPayload();
+}
+
+export async function createOrFindGoogleUser(_data, googlePayload) {
+  const email = googlePayload.email.toLowerCase();
+  
+  // Check if user exists
+  const { rows } = await query("SELECT * FROM users WHERE LOWER(email) = $1", [email]);
+  let user = rows[0];
+
+  if (!user) {
+    // Create new customer user
+    const userId = `user-customer-${crypto.randomUUID().slice(0, 8)}`;
+    // For Google users, we might not have a username initially, or we can derive it
+    const username = email.split('@')[0] + "_" + crypto.randomInt(1000, 9999);
+    
+    await query(
+      `INSERT INTO users (id, role, username, email, display_name) 
+       VALUES ($1, 'customer', $2, $3, $4)`,
+      [userId, username, email, googlePayload.name]
+    );
+    
+    const { rows: newRows } = await query("SELECT * FROM users WHERE id = $1", [userId]);
+    user = newRows[0];
+  }
+
+  return user;
 }
 
 export function verifyPassword(password, passwordHash) {

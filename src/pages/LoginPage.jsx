@@ -2,6 +2,8 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../lib/api";
 import { useAuth, useToast } from "../App";
+import { auth, googleProvider } from "../lib/firebase";
+import { signInWithPopup } from "firebase/auth";
 
 import { APP_CONFIG } from "../config";
 
@@ -22,6 +24,30 @@ export default function LoginPage() {
     function set(field, value) {
         setForm(p => ({ ...p, [field]: value }));
         setError("");
+    }
+
+    async function handleGoogleLogin() {
+        setLoading(true);
+        setError("");
+        try {
+            const result = await signInWithPopup(auth, googleProvider);
+            const userToken = await result.user.getIdToken();
+            
+            const { token, user } = await apiFetch("/api/auth/google", {
+                method: "POST",
+                body: { idToken: userToken }
+            });
+
+            login(token, user);
+            toast("Sign in successful! 👋", "success");
+            navigate("/" + user.role);
+        } catch (err) {
+            if (err.code !== "auth/popup-closed-by-user") {
+                setError(err.message);
+            }
+        } finally {
+            setLoading(false);
+        }
     }
 
     async function submit(e) {
@@ -142,6 +168,20 @@ export default function LoginPage() {
                         {loading ? <span className="spinner" /> : (isSignup ? "Create Account" : "Sign In")}
                     </button>
                 </form>
+
+                {role === "customer" && (
+                    <>
+                        <div className="login-divider"><span>or</span></div>
+                        <button 
+                            className="btn btn-secondary btn-block btn-google" 
+                            onClick={handleGoogleLogin}
+                            disabled={loading}
+                        >
+                            <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" width="18" height="18" />
+                            Continue with Google
+                        </button>
+                    </>
+                )}
 
                 {role === "customer" && (
                     <div className="form-toggle">

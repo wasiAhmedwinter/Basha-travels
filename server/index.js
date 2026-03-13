@@ -8,7 +8,8 @@ import {
   completeDriverTrip, createCustomer, createTrip, ensureStore, findUserByEmail, findUserByUsername,
   findUserFromTokenPayload, getAdminDashboard, getCustomerDashboard, getDriverDashboard, getPublicBootstrap,
   getSessionPayload, quoteTrip, setDriverAvailability, startDriverTrip, verifyPassword,
-  addCarType, addDriver, acceptTrip, rejectTrip, getCustomerAvailability
+  addCarType, addDriver, acceptTrip, rejectTrip, getCustomerAvailability,
+  verifyGoogleToken, createOrFindGoogleUser
 } from "./store.js"; 
 
 const app = express();
@@ -98,6 +99,17 @@ app.post("/api/auth/admin/login", async (req, res, next) => {
     if (!user || !verifyPassword(req.body.password ?? "", user.password_hash)) {
       return res.status(401).json({ message: "Admin login is invalid." });
     }
+    await sendAuthResponse(res, user);
+  } catch (err) { next(err); }
+});
+
+app.post("/api/auth/google", async (req, res, next) => {
+  try {
+    const { idToken } = req.body;
+    if (!idToken) return res.status(400).json({ message: "Google ID Token is required." });
+
+    const payload = await verifyGoogleToken(idToken);
+    const user = await createOrFindGoogleUser(null, payload);
     await sendAuthResponse(res, user);
   } catch (err) { next(err); }
 });
