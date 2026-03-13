@@ -32,7 +32,7 @@ export default function LoginPage() {
             let endpoint, body;
             if (role === "customer" && mode === "signup") {
                 endpoint = "/api/auth/customer/signup";
-                body = { name: form.name, email: form.email, phone: form.phone, password: form.password };
+                body = { name: form.name, username: form.username, email: form.email, phone: form.phone, password: form.password };
             } else if (role === "customer") {
                 endpoint = "/api/auth/customer/login";
                 body = { email: form.email, password: form.password };
@@ -98,6 +98,11 @@ export default function LoginPage() {
                                     onChange={e => set("name", e.target.value)} required />
                             </div>
                             <div className="form-group">
+                                <label className="form-label">Username</label>
+                                <input className="form-input" placeholder="riyasen99" value={form.username}
+                                    onChange={e => set("username", e.target.value)} required />
+                            </div>
+                            <div className="form-group">
                                 <label className="form-label">Phone</label>
                                 <input className="form-input" placeholder="+91 90000 00000" value={form.phone}
                                     onChange={e => set("phone", e.target.value)} required />
@@ -108,8 +113,8 @@ export default function LoginPage() {
                     {/* Email or Username */}
                     {role === "customer" ? (
                         <div className="form-group">
-                            <label className="form-label">Email</label>
-                            <input className="form-input" type="email" placeholder="you@example.com" value={form.email}
+                            <label className="form-label">Username or Email</label>
+                            <input className="form-input" type="text" placeholder="you@example.com or riyasen99" value={form.email}
                                 onChange={e => set("email", e.target.value)} required />
                         </div>
                     ) : (
