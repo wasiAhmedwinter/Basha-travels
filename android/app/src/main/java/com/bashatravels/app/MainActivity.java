@@ -1,15 +1,12 @@
 package com.bashatravels.app;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.View;
-import android.view.Window;
-import android.view.WindowManager;
 import android.webkit.CookieManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebResourceRequest;
@@ -19,7 +16,9 @@ import android.webkit.WebViewClient;
 import android.widget.FrameLayout;
 import android.widget.ProgressBar;
 
-public class MainActivity extends Activity {
+import androidx.appcompat.app.AppCompatActivity;
+
+public class MainActivity extends AppCompatActivity {
 
     private static final String APP_URL = "https://basha-travels-production.up.railway.app";
     private WebView webView;
@@ -31,8 +30,7 @@ public class MainActivity extends Activity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        // Fullscreen immersive with dark status bar
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
+        // Dark status/nav bar matching the app
         getWindow().setStatusBarColor(Color.parseColor("#0d0d1a"));
         getWindow().setNavigationBarColor(Color.parseColor("#0d0d1a"));
         getWindow().getDecorView().setSystemUiVisibility(
