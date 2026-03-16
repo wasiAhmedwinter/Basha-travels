@@ -4,6 +4,8 @@ import LoginPage from "./pages/LoginPage";
 import CustomerPage from "./pages/CustomerPage";
 import DriverPage from "./pages/DriverPage";
 import AdminPage from "./pages/AdminPage";
+import { APP_CONFIG } from "./config";
+import { apiFetch } from "./lib/api";
 
 // ─── Auth Context ─────────────────────────────────────────────────────────────
 const AuthCtx = createContext(null);
@@ -75,6 +77,79 @@ function RootRedirect() {
   return <Navigate to={map[session.user.role] ?? "/login"} replace />;
 }
 
+// ─── Demo Role Switcher (only visible in DEMO_MODE) ──────────────────────────
+function DemoRoleSwitcher() {
+  const { session, login, logout } = useAuth();
+  const navigate = useNavigate();
+  const [switching, setSwitching] = useState(false);
+
+  if (!APP_CONFIG.DEMO_MODE || !session) return null;
+
+  const currentRole = session.user?.role || "customer";
+
+  async function switchTo(targetRole) {
+    if (targetRole === currentRole || switching) return;
+    setSwitching(true);
+    try {
+      let endpoint, body;
+      if (targetRole === "admin") {
+        endpoint = "/api/auth/admin/login";
+        body = { username: "admin", password: "admin" };
+      } else {
+        endpoint = "/api/auth/customer/login";
+        body = { email: "riya@example.com", password: "customer123" };
+      }
+      const { token, user } = await apiFetch(endpoint, { method: "POST", body });
+      logout();
+      login(token, user);
+      navigate("/" + user.role);
+    } catch (err) {
+      console.error("Demo switch failed:", err);
+    } finally {
+      setSwitching(false);
+    }
+  }
+
+  const roles = ["customer", "admin"];
+
+  return (
+    <div style={{
+      position: "fixed", bottom: 24, right: 20, zIndex: 9999,
+      display: "flex", gap: 0, borderRadius: 14, overflow: "hidden",
+      boxShadow: "0 6px 24px rgba(0,0,0,0.5)",
+      border: "1px solid rgba(255,255,255,0.1)",
+      backdropFilter: "blur(12px)",
+      background: "rgba(20,20,32,0.9)",
+      opacity: switching ? 0.6 : 1,
+      transition: "opacity 0.2s",
+      pointerEvents: switching ? "none" : "auto"
+    }}>
+      <div style={{
+        padding: "6px 10px 6px 12px", fontSize: 10, fontWeight: 700,
+        color: "rgba(255,255,255,0.4)", letterSpacing: "0.08em",
+        textTransform: "uppercase", display: "flex", alignItems: "center"
+      }}>DEMO</div>
+      {roles.map(r => (
+        <button
+          key={r}
+          onClick={() => switchTo(r)}
+          style={{
+            padding: "10px 16px", border: "none", cursor: "pointer",
+            fontSize: 13, fontWeight: currentRole === r ? 800 : 500,
+            background: currentRole === r
+              ? "linear-gradient(135deg, #7c6fff 0%, #5a4fcc 100%)"
+              : "transparent",
+            color: currentRole === r ? "#fff" : "rgba(255,255,255,0.5)",
+            transition: "all 0.2s"
+          }}
+        >
+          {r === "customer" ? "👤 Customer" : "⚙️ Admin"}
+        </button>
+      ))}
+    </div>
+  );
+}
+
 // ─── App ──────────────────────────────────────────────────────────────────────
 export default function App() {
   return (
@@ -94,6 +169,7 @@ export default function App() {
           } />
           <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
+        <DemoRoleSwitcher />
       </ToastProvider>
     </AuthProvider>
   );
