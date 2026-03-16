@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef } from "react";
+import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../lib/api";
 import { useAuth, useToast } from "../App";
@@ -20,28 +20,6 @@ export default function LoginPage() {
     const [form, setForm] = useState({ email: "", name: "", phone: "", username: "", password: "" });
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState("");
-    const demoTriedRef = useRef(false);
-
-    // ── Demo Mode: auto-login on mount ────────────────────────────────────────
-    useEffect(() => {
-        if (!APP_CONFIG.DEMO_MODE || demoTriedRef.current) return;
-        demoTriedRef.current = true;
-        (async () => {
-            try {
-                setLoading(true);
-                const { token, user } = await apiFetch("/api/auth/customer/login", {
-                    method: "POST",
-                    body: { email: "riya@example.com", password: "customer123" }
-                });
-                login(token, user);
-                navigate("/" + user.role);
-            } catch (err) {
-                // If auto-login fails, fall back to showing the normal login page
-                setError("Demo auto-login failed: " + err.message);
-                setLoading(false);
-            }
-        })();
-    }, []);
 
     function set(field, value) {
         setForm(p => ({ ...p, [field]: value }));
@@ -114,18 +92,6 @@ export default function LoginPage() {
     }
 
     const isSignup = role === "customer" && mode === "signup";
-
-    // In demo mode, show a loading screen while auto-login is in progress
-    if (APP_CONFIG.DEMO_MODE && loading) {
-        return (
-            <div className="login-page">
-                <div className="login-box" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, padding: "60px 30px" }}>
-                    <div className="spinner" style={{ width: 32, height: 32, borderWidth: 3 }} />
-                    <div style={{ color: "var(--text2)", fontSize: 14 }}>Starting demo…</div>
-                </div>
-            </div>
-        );
-    }
 
     return (
         <div className="login-page">

@@ -1,4 +1,4 @@
-import { createContext, useContext, useState, useCallback, useEffect } from "react";
+import { createContext, useContext, useState, useCallback, useEffect, useRef } from "react";
 import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
 import LoginPage from "./pages/LoginPage";
 import CustomerPage from "./pages/CustomerPage";
@@ -77,6 +77,98 @@ function RootRedirect() {
   return <Navigate to={map[session.user.role] ?? "/login"} replace />;
 }
 
+// ─── Demo Bootstrap (gates entire app in DEMO_MODE) ──────────────────────────
+function DemoBootstrap({ children }) {
+  const { session, login } = useAuth();
+  const navigate = useNavigate();
+  const [demoName, setDemoName] = useState(() => localStorage.getItem("demo_user_name") || "");
+  const [nameInput, setNameInput] = useState("");
+  const [booting, setBooting] = useState(true);
+  const bootedRef = useRef(false);
+
+  useEffect(() => {
+    if (!APP_CONFIG.DEMO_MODE) { setBooting(false); return; }
+    // Already have a session — done
+    if (session) { setBooting(false); return; }
+    // No name yet — wait for user to enter it
+    if (!demoName) { setBooting(false); return; }
+    // Already tried
+    if (bootedRef.current) return;
+    bootedRef.current = true;
+
+    (async () => {
+      try {
+        const { token, user } = await apiFetch("/api/auth/customer/login", {
+          method: "POST",
+          body: { email: "riya@example.com", password: "customer123" }
+        });
+        user.displayName = demoName;
+        login(token, user);
+        navigate("/customer");
+      } catch (err) {
+        console.error("Demo auto-login failed:", err);
+        // Fall through to normal app (will show login page)
+      } finally {
+        setBooting(false);
+      }
+    })();
+  }, [demoName, session]);
+
+  if (!APP_CONFIG.DEMO_MODE) return children;
+
+  // Step 1: Ask for name (only once — saves to localStorage)
+  if (!demoName) {
+    return (
+      <div className="login-page">
+        <div className="login-box" style={{ textAlign: "center" }}>
+          <div style={{ fontSize: 48, marginBottom: 16 }}>👋</div>
+          <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 6 }}>Welcome!</div>
+          <div style={{ fontSize: 14, color: "var(--text2)", marginBottom: 24, lineHeight: 1.5 }}>
+            Enter your name to get started with the <strong>{APP_CONFIG.appName}</strong> demo.
+          </div>
+          <form onSubmit={(e) => {
+            e.preventDefault();
+            const name = nameInput.trim();
+            if (!name) return;
+            localStorage.setItem("demo_user_name", name);
+            setDemoName(name);
+          }}>
+            <div className="form-group" style={{ marginBottom: 16 }}>
+              <input
+                className="form-input"
+                placeholder="Your name"
+                value={nameInput}
+                onChange={e => setNameInput(e.target.value)}
+                autoFocus
+                required
+                style={{ textAlign: "center", fontSize: 16 }}
+              />
+            </div>
+            <button className="btn btn-primary btn-block btn-lg" type="submit" disabled={!nameInput.trim()}>
+              Continue →
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
+
+  // Step 2: Auto-login in progress
+  if (booting || !session) {
+    return (
+      <div className="login-page">
+        <div className="login-box" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, padding: "60px 30px" }}>
+          <div className="spinner" style={{ width: 32, height: 32, borderWidth: 3 }} />
+          <div style={{ color: "var(--text2)", fontSize: 14 }}>Starting demo…</div>
+        </div>
+      </div>
+    );
+  }
+
+  // Step 3: Logged in — render the app
+  return children;
+}
+
 // ─── Demo Role Switcher (only visible in DEMO_MODE) ──────────────────────────
 function DemoRoleSwitcher() {
   const { session, login, logout } = useAuth();
@@ -86,6 +178,7 @@ function DemoRoleSwitcher() {
   if (!APP_CONFIG.DEMO_MODE || !session) return null;
 
   const currentRole = session.user?.role || "customer";
+  const demoName = localStorage.getItem("demo_user_name") || "Demo User";
 
   async function switchTo(targetRole) {
     if (targetRole === currentRole || switching) return;
@@ -100,6 +193,7 @@ function DemoRoleSwitcher() {
         body = { email: "riya@example.com", password: "customer123" };
       }
       const { token, user } = await apiFetch(endpoint, { method: "POST", body });
+      user.displayName = demoName;
       logout();
       login(token, user);
       navigate("/" + user.role);
@@ -155,20 +249,22 @@ export default function App() {
   return (
     <AuthProvider>
       <ToastProvider>
-        <Routes>
-          <Route path="/" element={<RootRedirect />} />
-          <Route path="/login" element={<LoginPage />} />
-          <Route path="/customer" element={
-            <Protected role="customer"><CustomerPage /></Protected>
-          } />
-          <Route path="/driver" element={
-            <Protected role="driver"><DriverPage /></Protected>
-          } />
-          <Route path="/admin" element={
-            <Protected role="admin"><AdminPage /></Protected>
-          } />
-          <Route path="*" element={<Navigate to="/" replace />} />
-        </Routes>
+        <DemoBootstrap>
+          <Routes>
+            <Route path="/" element={<RootRedirect />} />
+            <Route path="/login" element={<LoginPage />} />
+            <Route path="/customer" element={
+              <Protected role="customer"><CustomerPage /></Protected>
+            } />
+            <Route path="/driver" element={
+              <Protected role="driver"><DriverPage /></Protected>
+            } />
+            <Route path="/admin" element={
+              <Protected role="admin"><AdminPage /></Protected>
+            } />
+            <Route path="*" element={<Navigate to="/" replace />} />
+          </Routes>
+        </DemoBootstrap>
         <DemoRoleSwitcher />
       </ToastProvider>
     </AuthProvider>
