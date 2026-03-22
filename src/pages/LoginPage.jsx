@@ -1,9 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../lib/api";
 import { useAuth, useToast } from "../App";
 import { auth, googleProvider } from "../lib/firebase";
 import { signInWithPopup, GoogleAuthProvider as FirebaseGoogleAuthProvider } from "firebase/auth";
+import { motion } from "framer-motion";
 
 import { APP_CONFIG } from "../config";
 
@@ -12,8 +13,15 @@ const ROLES = ["customer", "admin"]; // "driver" hidden for demo
 
 export default function LoginPage() {
     const navigate = useNavigate();
-    const { login } = useAuth();
+    const { login, session } = useAuth();
     const toast = useToast();
+
+    // Redirect already authenticated users
+    useEffect(() => {
+        if (session) {
+            navigate("/" + (session.user?.role || "customer"), { replace: true });
+        }
+    }, [session, navigate]);
 
     const [role, setRole] = useState("customer");
     const [mode, setMode] = useState("login"); // login | signup (customer only)
@@ -116,6 +124,9 @@ export default function LoginPage() {
                             className={`role-btn ${role === r ? "active" : ""}`}
                             onClick={() => { setRole(r); setMode("login"); setError(""); }}
                         >
+                            {role === r && (
+                                <motion.div layoutId="login-role" style={{ position: "absolute", inset: 0, background: "rgba(124,111,255,0.1)", borderRadius: "10px", zIndex: -1 }} transition={{ type: "spring", stiffness: 300, damping: 30 }} />
+                            )}
                             <div style={{ fontSize: 20, marginBottom: 4 }}>{ICONS[r]}</div>
                             {r.charAt(0).toUpperCase() + r.slice(1)}
                         </button>

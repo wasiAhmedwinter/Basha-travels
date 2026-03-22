@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../lib/api";
 import { useAuth, useToast } from "../App";
 import { APP_CONFIG } from "../config";
+import { motion, AnimatePresence } from "framer-motion";
 
 // ── Map component ─────────────────────────────────────────────────────────────
 function DummyMap({ locations, pickup, dropoff, routePoints, driverPos, isSearching }) {
@@ -610,13 +611,26 @@ export default function CustomerPage() {
             {/* Tabs */}
             <div style={{ padding: "12px 20px 0", flexShrink: 0 }}>
                 <div className="tabs">
-                    <button className={`tab ${tab === "book" ? "active" : ""}`} onClick={() => setTab("book")}>Book</button>
+                    <button className={`tab ${tab === "book" ? "active" : ""}`} onClick={() => setTab("book")}>
+                        {tab === "book" && (
+                            <motion.div layoutId="cust-tabs" style={{ position: "absolute", inset: 0, background: "var(--bg3)", borderRadius: "8px", zIndex: -1, boxShadow: "0 2px 8px rgba(0,0,0,0.2)" }} transition={{ type: "spring", stiffness: 300, damping: 30 }} />
+                        )}
+                        Book
+                    </button>
                     {data.activeTrip && (
                         <button className={`tab ${tab === "track" ? "active" : ""}`} onClick={() => setTab("track")}>
+                            {tab === "track" && (
+                                <motion.div layoutId="cust-tabs" style={{ position: "absolute", inset: 0, background: "var(--bg3)", borderRadius: "8px", zIndex: -1, boxShadow: "0 2px 8px rgba(0,0,0,0.2)" }} transition={{ type: "spring", stiffness: 300, damping: 30 }} />
+                            )}
                             🟢 Tracking
                         </button>
                     )}
-                    <button className={`tab ${tab === "history" ? "active" : ""}`} onClick={() => setTab("history")}>History</button>
+                    <button className={`tab ${tab === "history" ? "active" : ""}`} onClick={() => setTab("history")}>
+                        {tab === "history" && (
+                            <motion.div layoutId="cust-tabs" style={{ position: "absolute", inset: 0, background: "var(--bg3)", borderRadius: "8px", zIndex: -1, boxShadow: "0 2px 8px rgba(0,0,0,0.2)" }} transition={{ type: "spring", stiffness: 300, damping: 30 }} />
+                        )}
+                        History
+                    </button>
                 </div>
             </div>
 

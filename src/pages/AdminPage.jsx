@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import { apiFetch } from "../lib/api";
 import { useAuth, useToast } from "../App";
 import { APP_CONFIG } from "../config";
+import { motion, AnimatePresence } from "framer-motion";
 
 const fmt = n => "₹" + Number(n).toLocaleString("en-IN");
 function timeAgo(iso) {
@@ -275,6 +276,9 @@ export default function AdminPage() {
                 <nav className="sidebar-nav">
                     {NAV.map(n => (
                         <button key={n.id} className={`sidebar-item ${nav === n.id ? "active" : ""}`} onClick={() => setNav(n.id)}>
+                            {nav === n.id && (
+                                <motion.div layoutId="admin-sidebar" style={{ position: "absolute", inset: 0, background: "rgba(124,111,255,0.15)", borderRadius: "10px", zIndex: -1 }} transition={{ type: "spring", stiffness: 300, damping: 30 }} />
+                            )}
                             <span>{n.icon}</span> {n.label}
                             {n.id === "trips" && metrics.activeTrips > 0 && (
                                 <span className="badge badge-green" style={{ marginLeft: "auto", padding: "1px 7px" }}>
@@ -451,21 +455,31 @@ export default function AdminPage() {
                                     </div>
 
                                     {/* Expanded Details Section */}
-                                    {isExpanded && (
-                                        <div style={{ marginTop: 16, paddingTop: 16, borderTop: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: 12 }}>
-                                            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                                                <div style={{ fontSize: 11, color: "var(--text3)", textTransform: "uppercase", letterSpacing: 0.5 }}>Contact Information</div>
-                                                <div style={{ fontSize: 14 }}>{d.contact || "—"}</div>
-                                            </div>
-                                            <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
-                                                <div style={{ fontSize: 11, color: "var(--text3)", textTransform: "uppercase", letterSpacing: 0.5 }}>Login Credentials</div>
-                                                <div style={{ fontSize: 13, background: "var(--bg2)", padding: "10px", borderRadius: 6, display: "flex", flexDirection: "column", gap: 4 }}>
-                                                    <div><span style={{ color: "var(--text3)" }}>Username:</span> {d.auth?.username || d.username}</div>
-                                                    <div><span style={{ color: "var(--text3)" }}>Hidden Pass Hash:</span> {d.auth?.passwordHash ? "••••••••" : "Unknown"}</div>
+                                    <AnimatePresence>
+                                        {isExpanded && (
+                                            <motion.div
+                                                initial={{ height: 0, opacity: 0, marginTop: 0 }}
+                                                animate={{ height: "auto", opacity: 1, marginTop: 16 }}
+                                                exit={{ height: 0, opacity: 0, marginTop: 0 }}
+                                                transition={{ duration: 0.2, ease: "easeInOut" }}
+                                                style={{ overflow: "hidden" }}
+                                            >
+                                                <div style={{ paddingTop: 16, borderTop: "1px solid var(--border)", display: "flex", flexDirection: "column", gap: 12 }}>
+                                                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                                                        <div style={{ fontSize: 11, color: "var(--text3)", textTransform: "uppercase", letterSpacing: 0.5 }}>Contact Information</div>
+                                                        <div style={{ fontSize: 14 }}>{d.contact || "—"}</div>
+                                                    </div>
+                                                    <div style={{ display: "flex", flexDirection: "column", gap: 4 }}>
+                                                        <div style={{ fontSize: 11, color: "var(--text3)", textTransform: "uppercase", letterSpacing: 0.5 }}>Login Credentials</div>
+                                                        <div style={{ fontSize: 13, background: "var(--bg2)", padding: "10px", borderRadius: 6, display: "flex", flexDirection: "column", gap: 4 }}>
+                                                            <div><span style={{ color: "var(--text3)" }}>Username:</span> {d.auth?.username || d.username}</div>
+                                                            <div><span style={{ color: "var(--text3)" }}>Hidden Pass Hash:</span> {d.auth?.passwordHash ? "••••••••" : "Unknown"}</div>
+                                                        </div>
+                                                    </div>
                                                 </div>
-                                            </div>
-                                        </div>
-                                    )}
+                                            </motion.div>
+                                        )}
+                                    </AnimatePresence>
 
                                     <div style={{ marginTop: 12, display: "flex", gap: 10 }}>
                                         <div style={{ flex: 1, background: "var(--bg2)", borderRadius: 8, padding: "8px 12px" }}>
@@ -530,6 +544,9 @@ export default function AdminPage() {
             <nav className="admin-mobile-nav">
                 {NAV.map(n => (
                     <button key={n.id} className={`sidebar-item ${nav === n.id ? "active" : ""}`} onClick={() => setNav(n.id)}>
+                        {nav === n.id && (
+                            <motion.div layoutId="admin-mobile-nav" style={{ position: "absolute", inset: 0, background: "rgba(124,111,255,0.15)", borderRadius: "10px", zIndex: -1 }} transition={{ type: "spring", stiffness: 300, damping: 30 }} />
+                        )}
                         <span style={{ fontSize: 18, marginBottom: 2 }}>{n.icon}</span> 
                         {n.label}
                     </button>

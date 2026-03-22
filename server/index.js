@@ -18,8 +18,12 @@ const JWT_SECRET = process.env.JWT_SECRET || "taxios-dev-secret";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const clientDist = path.resolve(__dirname, "..", "dist");
 
-await ensureStore(); 
-
+try {
+  await ensureStore(); 
+} catch (e) {
+  console.warn("⚠️ Postgres database not connected. The API will not function, but static files will be served.");
+  console.warn(e.message);
+}
 app.use(cors());
 app.use(express.json());
 

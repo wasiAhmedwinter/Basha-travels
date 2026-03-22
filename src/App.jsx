@@ -82,91 +82,51 @@ function RootRedirect() {
 function DemoBootstrap({ children }) {
   const { session, login } = useAuth();
   const navigate = useNavigate();
-  const [demoName, setDemoName] = useState(() => localStorage.getItem("demo_user_name") || "");
-  const [nameInput, setNameInput] = useState("");
+
   const [booting, setBooting] = useState(true);
   const bootedRef = useRef(false);
 
   useEffect(() => {
     if (!APP_CONFIG.DEMO_MODE) { setBooting(false); return; }
-    // Already have a session — done
     if (session) { setBooting(false); return; }
-    // No name yet — wait for user to enter it
-    if (!demoName) { setBooting(false); return; }
-    // Already tried
-    if (bootedRef.current) return;
-    bootedRef.current = true;
 
+    // If session is null in DEMO_MODE (initial load or after logout), boot into demo customer
+    let isMounted = true;
     (async () => {
+      setBooting(true);
       try {
         const { token, user } = await apiFetch("/api/auth/customer/login", {
           method: "POST",
           body: { email: "riya@example.com", password: "customer123" }
         });
-        user.displayName = demoName;
-        login(token, user);
-        navigate("/customer");
+        user.displayName = "Demo User";
+        if (isMounted) {
+          login(token, user);
+          navigate("/customer", { replace: true });
+        }
       } catch (err) {
         console.error("Demo auto-login failed:", err);
-        // Fall through to normal app (will show login page)
       } finally {
-        setBooting(false);
+        if (isMounted) setBooting(false);
       }
     })();
-  }, [demoName, session]);
+    return () => { isMounted = false; };
+  }, [session, login, navigate]);
 
   if (!APP_CONFIG.DEMO_MODE) return children;
-
-  // Step 1: Ask for name (only once — saves to localStorage)
-  if (!demoName) {
-    return (
-      <div className="login-page">
-        <div className="login-box" style={{ textAlign: "center" }}>
-          <div style={{ fontSize: 48, marginBottom: 16 }}>👋</div>
-          <div style={{ fontSize: 22, fontWeight: 800, marginBottom: 6 }}>Welcome!</div>
-          <div style={{ fontSize: 14, color: "var(--text2)", marginBottom: 24, lineHeight: 1.5 }}>
-            Enter your name to get started with the <strong>{APP_CONFIG.appName}</strong> demo.
-          </div>
-          <form onSubmit={(e) => {
-            e.preventDefault();
-            const name = nameInput.trim();
-            if (!name) return;
-            localStorage.setItem("demo_user_name", name);
-            setDemoName(name);
-          }}>
-            <div className="form-group" style={{ marginBottom: 16 }}>
-              <input
-                className="form-input"
-                placeholder="Your name"
-                value={nameInput}
-                onChange={e => setNameInput(e.target.value)}
-                autoFocus
-                required
-                style={{ textAlign: "center", fontSize: 16 }}
-              />
-            </div>
-            <button className="btn btn-primary btn-block btn-lg" type="submit" disabled={!nameInput.trim()}>
-              Continue →
-            </button>
-          </form>
-        </div>
-      </div>
-    );
-  }
-
-  // Step 2: Auto-login in progress
-  if (booting || !session) {
+  
+  // Show spinner while booting the real demo session
+  if (!session || booting) {
     return (
       <div className="login-page">
         <div className="login-box" style={{ display: "flex", flexDirection: "column", alignItems: "center", gap: 16, padding: "60px 30px" }}>
           <div className="spinner" style={{ width: 32, height: 32, borderWidth: 3 }} />
-          <div style={{ color: "var(--text2)", fontSize: 14 }}>Starting demo…</div>
+          <div style={{ color: "var(--text2)", fontSize: 14 }}>Starting demo environment...</div>
         </div>
       </div>
     );
   }
 
-  // Step 3: Logged in — render the app
   return children;
 }
 
@@ -174,16 +134,27 @@ function DemoBootstrap({ children }) {
 function DemoRoleSwitcher() {
   const { session, login, logout } = useAuth();
   const navigate = useNavigate();
+  
+  // Dragging state
+  const [pos, setPos] = useState({ x: window.innerWidth - 240, y: window.innerHeight - 120 }); // Floating safely above bottom right
+  const [isDragging, setIsDragging] = useState(false);
+  const dragRef = useRef({ startX: 0, startY: 0, initialX: 0, initialY: 0 });
+
   const [switching, setSwitching] = useState(false);
 
   if (!APP_CONFIG.DEMO_MODE || !session) return null;
 
   const currentRole = session.user?.role || "customer";
-  const demoName = localStorage.getItem("demo_user_name") || "Demo User";
 
   async function switchTo(targetRole) {
     if (targetRole === currentRole || switching) return;
     setSwitching(true);
+    
+    // Automatically nudge the switcher up if transitioning to admin so it doesn't block the bottom nav
+    if (targetRole === "admin") {
+      setPos(p => ({ ...p, y: Math.min(p.y, window.innerHeight - 120) }));
+    }
+    
     try {
       let endpoint, body;
       if (targetRole === "admin") {
@@ -194,10 +165,9 @@ function DemoRoleSwitcher() {
         body = { email: "riya@example.com", password: "customer123" };
       }
       const { token, user } = await apiFetch(endpoint, { method: "POST", body });
-      user.displayName = demoName;
-      logout();
+      user.displayName = "Demo " + (targetRole === "admin" ? "Admin" : "User");
       login(token, user);
-      navigate("/" + user.role);
+      navigate("/" + user.role, { replace: true });
     } catch (err) {
       console.error("Demo switch failed:", err);
     } finally {
@@ -205,20 +175,97 @@ function DemoRoleSwitcher() {
     }
   }
 
+  const handlePointerDown = (e) => {
+    e.preventDefault(); // Prevent text selection
+    setIsDragging(true);
+    dragRef.current = {
+      startX: e.clientX || (e.touches && e.touches[0].clientX),
+      startY: e.clientY || (e.touches && e.touches[0].clientY),
+      initialX: pos.x,
+      initialY: pos.y
+    };
+  };
+
+  useEffect(() => {
+    if (!isDragging) return;
+
+    const handlePointerMove = (e) => {
+      const clientX = e.clientX || (e.touches && e.touches[0].clientX);
+      const clientY = e.clientY || (e.touches && e.touches[0].clientY);
+      
+      const dx = clientX - dragRef.current.startX;
+      const dy = clientY - dragRef.current.startY;
+      
+      // Keep within bounds roughly
+      let newX = dragRef.current.initialX + dx;
+      let newY = dragRef.current.initialY + dy;
+      
+      // Basic bounds check to keep it somewhat on screen
+      newX = Math.max(10, Math.min(window.innerWidth - 200, newX));
+      newY = Math.max(10, Math.min(window.innerHeight - 60, newY));
+
+      setPos({ x: newX, y: newY });
+    };
+
+    const handlePointerUp = () => {
+      setIsDragging(false);
+    };
+
+    window.addEventListener('mousemove', handlePointerMove);
+    window.addEventListener('mouseup', handlePointerUp);
+    window.addEventListener('touchmove', handlePointerMove, { passive: false });
+    window.addEventListener('touchend', handlePointerUp);
+
+    return () => {
+      window.removeEventListener('mousemove', handlePointerMove);
+      window.removeEventListener('mouseup', handlePointerUp);
+      window.removeEventListener('touchmove', handlePointerMove);
+      window.removeEventListener('touchend', handlePointerUp);
+    };
+  }, [isDragging]);
+
   const roles = ["customer", "admin"];
 
   return (
     <div style={{
-      position: "fixed", bottom: 24, right: 20, zIndex: 9999,
+      position: "fixed", 
+      left: pos.x,
+      top: pos.y,
+      zIndex: 9999,
       display: "flex", gap: 0, borderRadius: 14, overflow: "hidden",
-      boxShadow: "0 6px 24px rgba(0,0,0,0.5)",
+      boxShadow: isDragging ? "0 12px 32px rgba(0,0,0,0.6)" : "0 6px 24px rgba(0,0,0,0.5)",
       border: "1px solid rgba(255,255,255,0.1)",
       backdropFilter: "blur(12px)",
       background: "rgba(20,20,32,0.9)",
       opacity: switching ? 0.6 : 1,
-      transition: "opacity 0.2s",
-      pointerEvents: switching ? "none" : "auto"
+      pointerEvents: switching ? "none" : "auto",
+      transform: isDragging ? "scale(1.02)" : "scale(1)",
+      transition: isDragging ? "none" : "opacity 0.2s, transform 0.2s, box-shadow 0.2s, top 0.4s cubic-bezier(0.2, 0.8, 0.2, 1), left 0.4s ease-out",
+      userSelect: "none",
+      touchAction: "none",
+      whiteSpace: "nowrap"
     }}>
+      {/* Drag Handle */}
+      <div 
+        onMouseDown={handlePointerDown}
+        onTouchStart={handlePointerDown}
+        title="Drag to move"
+        style={{
+          padding: "6px", 
+          display: "flex", 
+          alignItems: "center", 
+          justifyContent: "center",
+          cursor: isDragging ? "grabbing" : "grab",
+          background: "rgba(255,255,255,0.05)",
+          borderRight: "1px solid rgba(255,255,255,0.08)"
+        }}
+      >
+        <div style={{ display: "flex", gap: 2 }}>
+          <div style={{ width: 3, height: 16, borderLeft: "2px dotted rgba(255,255,255,0.4)" }} />
+          <div style={{ width: 3, height: 16, borderLeft: "2px dotted rgba(255,255,255,0.4)" }} />
+        </div>
+      </div>
+      
       <div style={{
         padding: "6px 10px 6px 12px", fontSize: 10, fontWeight: 700,
         color: "rgba(255,255,255,0.4)", letterSpacing: "0.08em",

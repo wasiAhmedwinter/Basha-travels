@@ -54,6 +54,7 @@
   box-sizing: border-box;
   margin: 0;
   padding: 0;
+  -webkit-tap-highlight-color: transparent;
 }
 
 html, body, #root {
@@ -100,6 +101,8 @@ html, body, #root {
   font-weight: 600;
   transition: all var(--transition);
   white-space: nowrap;
+  user-select: none;
+  -webkit-user-select: none;
 }
 .btn:disabled { opacity: 0.45; cursor: not-allowed; }
 .btn-primary {
@@ -232,8 +235,8 @@ select.form-input option { background: var(--bg2); color: var(--text); }
 
 /* Tabs */
 .tabs { display: flex; gap: 6px; background: rgba(0,0,0,0.2); border-radius: 12px; padding: 6px; }
-.tab { flex: 1; padding: 10px 14px; border: none; border-radius: 8px; background: transparent; color: var(--text2); font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; transition: all var(--transition); }
-.tab.active { background: var(--bg3); color: var(--text); box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+.tab { position: relative; z-index: 1; flex: 1; padding: 10px 14px; border: none; border-radius: 8px; background: transparent; color: var(--text2); font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; transition: color var(--transition); }
+.tab.active { color: var(--text); }
 
 /* Login page */
 .login-page {
@@ -286,11 +289,13 @@ select.form-input option { background: var(--bg2); color: var(--text); }
   font-size: 12px;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: border-color var(--transition), color var(--transition);
   text-align: center;
+  position: relative;
+  z-index: 1;
 }
 .role-btn:hover { border-color: var(--border2); color: var(--text); }
-.role-btn.active { border-color: var(--accent); color: var(--accent); background: rgba(124,111,255,0.1); }
+.role-btn.active { border-color: var(--accent); color: var(--accent); background: transparent; }
 .form-stack { display: flex; flex-direction: column; gap: 14px; }
 .form-toggle { font-size: 13px; color: var(--text2); text-align: center; margin-top: 12px; }
 .form-toggle button { background: none; border: none; color: var(--accent); font-family: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
@@ -397,11 +402,13 @@ select.form-input option { background: var(--bg2); color: var(--text); }
   font-size: 13px;
   font-weight: 600;
   cursor: pointer;
-  transition: all var(--transition);
+  transition: color var(--transition);
   text-align: left;
+  position: relative;
+  z-index: 1;
 }
-.sidebar-item:hover { background: var(--bg3); color: var(--text); }
-.sidebar-item.active { background: rgba(124,111,255,0.15); color: var(--accent); }
+.sidebar-item:hover { color: var(--text); }
+.sidebar-item.active { color: var(--accent); background: transparent; }
 .sidebar-bottom { margin-top: auto; }
 
 /* Driver dashboard */
