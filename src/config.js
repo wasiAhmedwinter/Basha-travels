@@ -5,7 +5,7 @@ export const APP_CONFIG = {
   // ── Demo Mode ───────────────────────────────────────────────────────────────
   // Set to true to bypass login and auto-login with demo credentials.
   // Set to false to restore normal authentication flow.
-  DEMO_MODE: true,
+  DEMO_MODE: false,
 
   // Brand Name
   appName: "Basha Travels",
