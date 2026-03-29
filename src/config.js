@@ -8,7 +8,7 @@ export const APP_CONFIG = {
   DEMO_MODE: true,
 
   // Brand Name
-  appName: "Basha Travels",
+  appName: "Indian Travels",
 
   // Tagline
   tagline: "Reliable Car Rental & Taxi Service in Raichur",
